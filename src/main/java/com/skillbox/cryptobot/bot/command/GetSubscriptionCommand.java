@@ -34,7 +34,7 @@ public class GetSubscriptionCommand implements IBotCommand {
         Long userId = message.getFrom().getId();
         String replyMessage = subscriptionService.findPriceByTelegramUserId(userId)
                 .map(s -> MessageFormat.format("Вы подписаны на стоимость биткоина {0} USD", s))
-                .orElseGet(() -> MessageFormat.format("Активные подписки для пользователя {0} отсутствуют", userId));
+                .orElse("Активные подписки отсутствуют");
         SendMessage answer = SendMessage.builder()
                 .chatId(userId.toString())
                 .text(replyMessage)

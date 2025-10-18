@@ -6,6 +6,7 @@ import com.skillbox.cryptobot.utils.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -35,6 +36,7 @@ public class TelegramNotificationService {
     private final AbsSender botSender;
     private final SubscriptionService subscriptionService;
 
+    @Async("notificationExecutor")
     public void notifyToBuy(Collection<Subscription> subscriptions) {
         if (subscriptions == null || subscriptions.isEmpty()) {
             return;
