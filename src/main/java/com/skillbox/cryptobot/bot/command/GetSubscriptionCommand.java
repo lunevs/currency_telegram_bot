@@ -1,16 +1,23 @@
 package com.skillbox.cryptobot.bot.command;
 
-import lombok.AllArgsConstructor;
+import com.skillbox.cryptobot.service.SubscriptionService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.text.MessageFormat;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GetSubscriptionCommand implements IBotCommand {
+
+    private final SubscriptionService subscriptionService;
 
     @Override
     public String getCommandIdentifier() {
@@ -24,5 +31,20 @@ public class GetSubscriptionCommand implements IBotCommand {
 
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
+        Long userId = message.getFrom().getId();
+        String replyMessage = subscriptionService.findPriceByTelegramUserId(userId)
+                .map(s -> MessageFormat.format("Вы подписаны на стоимость биткоина {0} USD", s))
+                .orElseGet(() -> MessageFormat.format("Активные подписки для пользователя {0} отсутствуют", userId));
+        SendMessage answer = SendMessage.builder()
+                .chatId(userId.toString())
+                .text(replyMessage)
+                .build();
+
+        try {
+            absSender.execute(answer);
+        } catch (TelegramApiException e) {
+            log.error("Error occurred in /get_subscription command", e);
+        }
+
     }
 }

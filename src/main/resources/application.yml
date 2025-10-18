@@ -8,14 +8,32 @@ telegram:
       delay:
         value: 10
         unit: MINUTES
+      rate-limit:
+        retry-attempts: 3
+        retry-delay: 1000
+        send-delay: 50
+    check:
+      enabled: true
+      interval: 120000  # milliseconds
 
 binance:
   api:
     getPrice: https://api.binance.com/api/v3/avgPrice?symbol=BTCUSDT
 
-db:
-  driver:
-    name: org.postgresql.Driver
-  url: jdbc:postgresql://localhost:5432/db
-  user: root
-  password: root
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    generate-ddl: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://localhost:5432/app_db
+    username: postgres
+    password: postgres
+    hikari:
+      schema: user_schema
+      connection-timeout: 10000
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS user_schema

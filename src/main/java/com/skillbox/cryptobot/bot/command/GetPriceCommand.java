@@ -32,10 +32,11 @@ public class GetPriceCommand implements IBotCommand {
 
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
-        SendMessage answer = new SendMessage();
-        answer.setChatId(message.getChatId());
+        SendMessage answer = SendMessage.builder()
+                .chatId(message.getChatId())
+                .text("Текущая цена биткоина " + TextUtil.toString(service.getBitcoinPrice()) + " USD")
+                .build();
         try {
-            answer.setText("Текущая цена биткоина " + TextUtil.toString(service.getBitcoinPrice()) + " USD");
             absSender.execute(answer);
         } catch (Exception e) {
             log.error("Ошибка возникла /get_price методе", e);

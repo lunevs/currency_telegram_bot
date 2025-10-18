@@ -17,9 +17,13 @@ public class CryptoCurrencyService {
         this.client = client;
     }
 
-    public double getBitcoinPrice() throws IOException {
+    public double getBitcoinPrice() {
         if (price.get() == null) {
-            price.set(client.getBitcoinPrice());
+            try {
+                price.set(client.getBitcoinPrice());
+            } catch (IOException e) {
+                log.error("Can't receive BTC price: {}", e.getMessage());
+            }
         }
         return price.get();
     }
